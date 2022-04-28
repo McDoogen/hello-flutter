@@ -4,16 +4,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-void main() => runApp(const MyApp2());
+void main() => runApp(const MyApp());
 
-class MyApp2 extends StatefulWidget {
-  const MyApp2({Key? key}) : super(key: key);
+class FutureThing extends StatefulWidget {
+  const FutureThing({Key? key}) : super(key: key);
 
   @override
-  State<MyApp2> createState() => _MyApp2State();
+  State<FutureThing> createState() => _FutureThingState();
 }
 
-class _MyApp2State extends State<MyApp2> {
+class _FutureThingState extends State<FutureThing> {
   late Future<Thing> futureThing;
 
   @override
@@ -24,24 +24,17 @@ class _MyApp2State extends State<MyApp2> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Fetchy Example',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: Scaffold(
-            appBar: AppBar(title: const Text('App Bar Title')),
-            body: Center(
-                child: FutureBuilder<Thing>(
-                    future: futureThing,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(snapshot.data!.text);
-                      } else if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
-                      }
-                      return const CircularProgressIndicator();
-                    }))));
+    return Center(
+        child: FutureBuilder<Thing>(
+            future: futureThing,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data!.text);
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
+              }
+              return const CircularProgressIndicator();
+            }));
   }
 }
 
@@ -66,7 +59,7 @@ class MyApp extends StatelessWidget {
                     Tab(icon: Icon(Icons.table_chart_outlined)),
                   ])),
               body: const TabBarView(children: [
-                Icon(Icons.star, color: Colors.red),
+                FutureThing(),
                 Icon(Icons.star, color: Colors.orange),
                 Icon(Icons.star, color: Colors.blue),
               ]))),
