@@ -38,6 +38,24 @@ class _FutureThingState extends State<FutureThing> {
   }
 }
 
+class WarningToast extends StatelessWidget {
+  const WarningToast({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: ElevatedButton(
+            child: const Text("Hello :)"),
+            onPressed: () {
+              final snacky = SnackBar(
+                content: const Text('CLICKED!!! >:O'),
+                action: SnackBarAction(label: '???', onPressed: () {}),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snacky);
+            }));
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -60,7 +78,7 @@ class MyApp extends StatelessWidget {
                   ])),
               body: const TabBarView(children: [
                 FutureThing(),
-                Icon(Icons.star, color: Colors.orange),
+                WarningToast(),
                 Icon(Icons.star, color: Colors.blue),
               ]))),
     );
