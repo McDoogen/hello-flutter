@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() => runApp(const MyApp());
 
@@ -108,4 +110,106 @@ class Thing {
       text: json['title'],
     );
   }
+}
+
+// SQL Things
+
+class Recipe {
+  final int id;
+  final String name;
+  final String difficulty;
+
+  const Recipe({
+    required this.id,
+    required this.name,
+    required this.difficulty,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'difficulty': difficulty,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Recipe{id: $id, name: $name, difficulty: $difficulty}';
+  }
+}
+
+void sqlExample() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = openDatabase(
+    join(await getDatabasesPath(), 'recipe_database.db'),
+    onCreate: (db, version) {
+      return db.execute(
+        'CREATE TABLE recipes(id INTEGER PRIMARY KEY, name TEXT, difficulty TEXT)',
+      );
+    },
+    version: 1,
+  );
+
+  Future<void> insertRecipe(Recipe recipe) async {
+    final db = await database;
+    await db.insert(
+      'recipes',
+      recipe.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Recipe>> recipes() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('recipes');
+    return List.generate(maps.length, (i) {
+      return Recipe(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        difficulty: maps[i]['difficulty'],
+      );
+    });
+  }
+
+  Future<void> updateRecipe(Recipe recipe) async {
+    final db = await database;
+    await db.update(
+      'recipes',
+      recipe.toMap(),
+      where: 'id = ?',
+      whereArgs: [recipe.id],
+    );
+  }
+
+  Future<void> deleteRecipe(int id) async {
+    final db = await database;
+    await db.delete(
+      'recipes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // Test 1
+  var cake1 = const Recipe(
+    id: 0,
+    name: 'lemon cake',
+    difficulty: 'complex',
+  );
+  await insertRecipe(cake1);
+  print(await recipes());
+
+  // Test 2
+  cake1 = const Recipe(
+    id: 0,
+    name: 'chocolate cake',
+    difficulty: 'easy',
+  );
+  await updateRecipe(cake1);
+  print(await recipes());
+
+  // Test 3
+  await deleteRecipe(cake1.id);
+  print(await recipes());
 }
