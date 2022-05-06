@@ -13,7 +13,7 @@ class Test2 extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.cyan,
       ),
-      home: ScaffoldTest(),
+      home: FirstRoute(),
     );
   }
 }
@@ -42,5 +42,41 @@ class _ScaffoldTestState extends State<ScaffoldTest> {
           child: const Icon(Icons.add)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+}
+
+class FirstRoute extends StatelessWidget {
+  const FirstRoute({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('First Route')),
+        body: Center(
+            child: ElevatedButton(
+                child: const Text('Go to Second Route!'),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: ((context) => const SecondRoute()),
+                      ));
+                })));
+  }
+}
+
+class SecondRoute extends StatelessWidget {
+  const SecondRoute({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Second Route')),
+        body: Center(
+            child: ElevatedButton(
+                child: const Text('Return from whence you came!'),
+                onPressed: () {
+                  Navigator.pop(context);
+                })));
   }
 }
